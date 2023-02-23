@@ -1,0 +1,1 @@
+ALTER TABLE posts RENAME COLUMN createdAt TO created

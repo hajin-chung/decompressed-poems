@@ -56,8 +56,13 @@ export async function putObject(
   await s3Client.putObject(key, data, {
     metadata: {
       "Content-Type": contentType ?? "text/html",
+      "Cache-Control": "no-cache",
     },
   });
+}
+
+export async function deleteObject(key: string) {
+  await s3Client.deleteObject(key);
 }
 
 export async function getContent() {
@@ -72,5 +77,9 @@ export async function getContent() {
 }
 
 export async function putContent(newContent: Content) {
-  await s3Client.putObject("content.json", JSON.stringify(newContent));
+  await s3Client.putObject("content.json", JSON.stringify(newContent), {
+    metadata: {
+      "Content-Type": "application/json",
+    },
+  });
 }

@@ -22,15 +22,16 @@ where you have to push each time you update a post. hated it
 
 ```
 +-- index: post list sorted by date, simple introduction of me
++-- thoughts: my short thoughts
 +-- posts: post list grouped by year
+\-- post
+	+-- [id]: post
 \-- api
 	+-- POST   `/post`: create new post -> update index, posts, post/id
 	+-- DELETE `/post/[id]`: delete post -> update index, posts, post/id
 	+-- POST   `/post/[id]`: update post -> update index, posts, post/id
-	+-- POST   `/thoughts`: create new thought -> update thoughts
-	+-- DELETE `/thoughts/[id]`: delete thoguht -> update thoughts
-\-- post
-	+-- [id]: post
+	+-- POST   `/thought`: create new thought -> update thoughts
+	+-- DELETE `/thought/[id]`: delete thoguht -> update thoughts
 ```
 
 ```typescript

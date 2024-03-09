@@ -9,11 +9,15 @@ export type Post = {
   content: string;
 };
 
-export type NewPost = Omit<Post, "id">;
+export type NewPost = Omit<Post, "id" | "createdAt" | "updatedAt">;
 
 export type Thought = {
   id: string;
   createdAt: string;
+  content: string;
+};
+
+export type NewThought = {
   content: string;
 };
 
@@ -80,6 +84,7 @@ export async function putContent(newContent: Content) {
   await s3Client.putObject("content.json", JSON.stringify(newContent), {
     metadata: {
       "Content-Type": "application/json",
+      "Cache-Control": "no-cache",
     },
   });
 }

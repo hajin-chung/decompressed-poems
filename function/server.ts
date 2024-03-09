@@ -1,5 +1,5 @@
 import { renderToString } from "jsx";
-import opine, { json } from "opine";
+import { Hono } from "hono";
 import { MainPage, PoemsPage, PostPage, PostsPage, Test } from "./views.tsx";
 import {
   deleteObject,
@@ -13,14 +13,12 @@ import {
 } from "./s3.ts";
 import { createId, current } from "./utils.ts";
 
-const app = opine();
-app.use(json());
+const app = new Hono();
 
-app.post("/build", async (_, res) => {
+app.post("/build", async (c) => {
   const content = await getContent();
   if (content === null) {
-    res.send("ERROR content.json not found").sendStatus(500);
-    return;
+    return c.text("ERROR content.json not found", { status: 500 });
   }
 
   const mainPage = await renderToString(MainPage(content));
@@ -38,11 +36,11 @@ app.post("/build", async (_, res) => {
     }),
   );
 
-  res.send("success").sendStatus(200);
+  return c.text("success");
 });
 
-app.post("/post", async (req, res) => {
-  const body = req.body as NewPost;
+app.post("/post", async (c) => {
+  const body = await c.req.json() as NewPost;
   const createdAt = current();
 
   const postId = createId();
@@ -50,8 +48,7 @@ app.post("/post", async (req, res) => {
 
   const content = await getContent();
   if (content === null) {
-    res.send("ERROR content.json not found").sendStatus(404);
-    return;
+    return c.text("ERROR content.json not found", { status: 500 });
   }
 
   content.posts.push(post);
@@ -65,22 +62,20 @@ app.post("/post", async (req, res) => {
   await putObject(`posts.html`, postsPage);
   await putObject(`post/${postId}.html`, postPage);
 
-  return res.send("success").sendStatus(200);
+  return c.text("success");
 });
 
-app.delete("/post/:id", async (req, res) => {
-  const postId = req.params["id"];
+app.delete("/post/:id", async (c) => {
+  const postId = c.req.param("id");
 
   const content = await getContent();
   if (content === null) {
-    res.send("ERROR content.json not found").sendStatus(404);
-    return;
+    return c.text("ERROR content.json not found", { status: 500 });
   }
 
   const postIdx = content.posts.findIndex((p) => p.id === postId);
   if (postIdx === -1) {
-    res.send(`ERROR post with id ${postId} not found`).sendStatus(404);
-    return;
+    return c.text(`ERROR post with id ${postId} not found`, { status: 500 });
   }
 
   content.posts.splice(postIdx, 1);
@@ -94,23 +89,22 @@ app.delete("/post/:id", async (req, res) => {
   await putObject(`posts.html`, postsPage);
   await deleteObject(`post/${postId}.html`);
 
-  return res.send("success");
+  return c.text("success");
 });
 
-app.post("/post/:id", async (req, res) => {
-  const body = req.body as NewPost;
-  const postId = req.params.id;
+app.post("/post/:id", async (c) => {
+  const body = await c.req.json() as NewPost;
+  const postId = c.req.param("id");
   const updatedAt = current();
 
   const content = await getContent();
   if (content === null) {
-    res.send("ERROR content.json not found").sendStatus(404);
-    return;
+    return c.text("ERROR content.json not found", { status: 500 });
   }
 
   const postIdx = content.posts.findIndex((post) => post.id === postId);
   if (postIdx === -1) {
-    return res.send(`ERROR post with ${postId} not found`).sendStatus(404);
+    return c.text(`ERROR post with id ${postId} not found`, { status: 500 });
   }
 
   const post: Post = { ...content.posts[postIdx], updatedAt, ...body };
@@ -126,11 +120,11 @@ app.post("/post/:id", async (req, res) => {
   await putObject(`posts.html`, postsPage);
   await putObject(`post/${postId}.html`, postPage);
 
-  return res.send("success").sendStatus(200);
+  return c.text("success");
 });
 
-app.post("/poem", async (req, res) => {
-  const body = req.body as NewPoem;
+app.post("/poem", async (c) => {
+  const body = await c.req.json() as NewPoem;
   const poemId = createId();
   const createdAt = current();
 
@@ -138,7 +132,7 @@ app.post("/poem", async (req, res) => {
 
   const content = await getContent();
   if (content === null) {
-    return res.send("ERROR content.json not found").sendStatus(404);
+    return c.text("ERROR content.json not found", { status: 500 });
   }
 
   content.poems.push(poem);
@@ -147,22 +141,20 @@ app.post("/poem", async (req, res) => {
   const poemsPage = await renderToString(PoemsPage(content.poems));
   await putObject("poems.html", poemsPage);
 
-  return res.send("success").sendStatus(200);
+  return c.text("success");
 });
 
-app.delete("/poem/:id", async (req, res) => {
-  const poemId = req.params.id;
+app.delete("/poem/:id", async (c) => {
+  const poemId = c.req.param("id");
 
   const content = await getContent();
   if (content === null) {
-    return res.send("ERROR content.json not found").sendStatus(404);
+    return c.text("ERROR content.json not found", { status: 500 });
   }
 
   const poemIdx = content.poems.findIndex((p) => p.id === poemId);
   if (poemIdx === -1) {
-    return res.send(`ERROR poem with id ${poemId} not found`).sendStatus(
-      404,
-    );
+    return c.text(`ERROR poem with id ${poemId} not found`, { status: 500 });
   }
 
   content.poems.splice(poemIdx, 1);
@@ -171,18 +163,16 @@ app.delete("/poem/:id", async (req, res) => {
   const poemsPage = await renderToString(PoemsPage(content.poems));
   await putObject("poems.html", poemsPage);
 
-  return res.send("success").sendStatus(200);
+  return c.text("success");
 });
 
-app.get("/", (_, res) => {
-  res.send("Welcome! you have reached decompressed poems api.");
+app.get("/", (c) => {
+  return c.text("Welcome! you have reached decompressed poems api.");
 });
 
-app.get("/test", async (_, res) => {
+app.get("/test", async (c) => {
   const html = await renderToString(Test());
-  res.send(html).setHeader("Content-Type", "text/html; utf-8").sendStatus(200);
+  return c.html(html);
 });
 
-app.listen(3000, () => {
-  console.log("server listening on http://localhost:3000");
-});
+Deno.serve({ port: 3000 }, app.fetch);

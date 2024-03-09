@@ -18,11 +18,9 @@ where you have to push each time you update a post. hated it
 
 ## details
 
-#### sitemap
-
 ```
 +-- index: post list sorted by date, simple introduction of me
-+-- thoughts: my short thoughts
++-- poems: my short thoughts
 +-- posts: post list grouped by year
 \-- post
 	+-- [id]: post
@@ -30,8 +28,8 @@ where you have to push each time you update a post. hated it
 	+-- POST   `/post`: create new post -> update index, posts, post/id
 	+-- DELETE `/post/[id]`: delete post -> update index, posts, post/id
 	+-- POST   `/post/[id]`: update post -> update index, posts, post/id
-	+-- POST   `/thought`: create new thought -> update thoughts
-	+-- DELETE `/thought/[id]`: delete thoguht -> update thoughts
+	+-- POST   `/poem`: create new poem -> update poems
+	+-- DELETE `/poem/[id]`: delete poem -> update poems
 ```
 
 ```typescript
@@ -42,15 +40,11 @@ type Post = {
 	createdAt: string,
 	updatedAt?: string,
 	content: string,
-}
-```
+};
 
-#### router pattern matching
-
-```
-/post/123123 match /post/:id
-/post/dsafdsa match /post/:id
-/post/dsafd match /post/:id
-
-/test/dsafdsa/dsa match /test/:a/:b
+type Poem = {
+	id: string,
+	content: string,
+	createdAt: string,
+};
 ```

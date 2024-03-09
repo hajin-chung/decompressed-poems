@@ -1,15 +1,15 @@
 import { renderToString } from "jsx";
-import opine, { json } from "https://deno.land/x/opine@2.3.3/mod.ts";
-import { MainPage, PostPage, PostsPage, Test, ThoughtsPage } from "./views.tsx";
+import opine, { json } from "opine";
+import { MainPage, PoemsPage, PostPage, PostsPage, Test } from "./views.tsx";
 import {
   deleteObject,
   getContent,
+  NewPoem,
   NewPost,
-  NewThought,
+  Poem,
   Post,
   putContent,
   putObject,
-  Thought,
 } from "./s3.ts";
 import { createId, current } from "./utils.ts";
 
@@ -25,11 +25,11 @@ app.post("/build", async (_, res) => {
 
   const mainPage = await renderToString(MainPage(content));
   const postsPage = await renderToString(PostsPage(content.posts));
-  const thoughtsPage = await renderToString(ThoughtsPage(content.thoughts));
+  const poemsPage = await renderToString(PoemsPage(content.poems));
 
   await putObject("index.html", mainPage);
   await putObject("posts.html", postsPage);
-  await putObject("thoughts.html", thoughtsPage);
+  await putObject("poems.html", poemsPage);
 
   await Promise.all(
     content.posts.map(async (post) => {
@@ -129,47 +129,47 @@ app.post("/post/:id", async (req, res) => {
   return res.send("success").sendStatus(200);
 });
 
-app.post("/thought", async (req, res) => {
-  const body = req.body as NewThought;
-  const thoughtId = createId();
+app.post("/poem", async (req, res) => {
+  const body = req.body as NewPoem;
+  const poemId = createId();
   const createdAt = current();
 
-  const thought: Thought = { id: thoughtId, content: body.content, createdAt };
+  const poem: Poem = { id: poemId, content: body.content, createdAt };
 
   const content = await getContent();
   if (content === null) {
     return res.send("ERROR content.json not found").sendStatus(404);
   }
 
-  content.thoughts.push(thought);
+  content.poems.push(poem);
   await putContent(content);
 
-  const thoughtsPage = await renderToString(ThoughtsPage(content.thoughts));
-  await putObject("thoughts.html", thoughtsPage);
+  const poemsPage = await renderToString(PoemsPage(content.poems));
+  await putObject("poems.html", poemsPage);
 
   return res.send("success").sendStatus(200);
 });
 
-app.delete("/thought/:id", async (req, res) => {
-  const thoughtId = req.params.id;
+app.delete("/poem/:id", async (req, res) => {
+  const poemId = req.params.id;
 
   const content = await getContent();
   if (content === null) {
     return res.send("ERROR content.json not found").sendStatus(404);
   }
 
-  const thoughtIdx = content.thoughts.findIndex((t) => t.id === thoughtId);
-  if (thoughtIdx === -1) {
-    return res.send(`ERROR thought with id ${thoughtId} not found`).sendStatus(
+  const poemIdx = content.poems.findIndex((p) => p.id === poemId);
+  if (poemIdx === -1) {
+    return res.send(`ERROR poem with id ${poemId} not found`).sendStatus(
       404,
     );
   }
 
-  content.thoughts.splice(thoughtIdx, 1);
+  content.poems.splice(poemIdx, 1);
   await putContent(content);
 
-  const thoughtsPage = await renderToString(ThoughtsPage(content.thoughts));
-  await putObject("thoughts.html", thoughtsPage);
+  const poemsPage = await renderToString(PoemsPage(content.poems));
+  await putObject("poems.html", poemsPage);
 
   return res.send("success").sendStatus(200);
 });

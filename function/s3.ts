@@ -11,19 +11,19 @@ export type Post = {
 
 export type NewPost = Omit<Post, "id" | "createdAt" | "updatedAt">;
 
-export type Thought = {
+export type Poem = {
   id: string;
   createdAt: string;
   content: string;
 };
 
-export type NewThought = {
+export type NewPoem = {
   content: string;
 };
 
 export type Content = {
   posts: Post[];
-  thoughts: Thought[];
+  poems: Poem[];
 };
 
 const S3_ACCESS_KEY = Deno.env.get("S3_ACCESS_KEY");

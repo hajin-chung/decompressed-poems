@@ -1,7 +1,7 @@
 /** @jsx h */
 /** @jsxFrag Fragment */
 import { h } from "jsx";
-import { Content, Post, Thought } from "./s3.ts";
+import { Content, Poem, Post } from "./s3.ts";
 
 type LayoutProps = { children?: JSX.Element };
 
@@ -11,7 +11,7 @@ function Header() {
       <h1>Decompressed Poems</h1>
       <nav>
         <a href="/posts.html">posts</a>
-        <a href="/thoughts.html">thoughts</a>
+        <a href="/poems.html">poems</a>
       </nav>
     </header>
   );
@@ -87,14 +87,13 @@ export function PostPage(post: Post) {
   );
 }
 
-export function ThoughtsPage(thoughts: Thought[]) {
-  console.log(thoughts);
+export function PoemsPage(poems: Poem[]) {
   return (
     <Layout>
-      {thoughts.map((thought) => (
-        <div class="thought">
-          <p class="thought-content">{thought.content}</p>
-          <p class="thought-date">{thought.createdAt}</p>
+      {poems.map((poem) => (
+        <div class="poem">
+          <p class="poem-content">{poem.content}</p>
+          <p class="poem-date">{poem.createdAt}</p>
         </div>
       ))}
     </Layout>

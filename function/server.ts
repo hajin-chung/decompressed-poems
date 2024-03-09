@@ -1,11 +1,17 @@
 import { renderToString } from "jsx";
 import opine, { json } from "https://deno.land/x/opine@2.3.3/mod.ts";
-import { Main } from "./views.tsx";
-import { deleteObject, getContent, Post, putContent, putObject } from "./s3.ts";
-import { NewPost } from "./s3.ts";
+import { MainPage, PostPage, PostsPage, Test, ThoughtsPage } from "./views.tsx";
+import {
+  deleteObject,
+  getContent,
+  NewPost,
+  NewThought,
+  Post,
+  putContent,
+  putObject,
+  Thought,
+} from "./s3.ts";
 import { createId, current } from "./utils.ts";
-import { Thought } from "./s3.ts";
-import { NewThought } from "./s3.ts";
 
 const app = opine();
 app.use(json());
@@ -17,9 +23,9 @@ app.post("/build", async (_, res) => {
     return;
   }
 
-  const mainPage = await renderToString(Main());
-  const postsPage = await renderToString(Main());
-  const thoughtsPage = await renderToString(Main());
+  const mainPage = await renderToString(MainPage(content));
+  const postsPage = await renderToString(PostsPage(content.posts));
+  const thoughtsPage = await renderToString(ThoughtsPage(content.thoughts));
 
   await putObject("index.html", mainPage);
   await putObject("posts.html", postsPage);
@@ -27,7 +33,7 @@ app.post("/build", async (_, res) => {
 
   await Promise.all(
     content.posts.map(async (post) => {
-      const postPage = await renderToString(Main());
+      const postPage = await renderToString(PostPage(post));
       return putObject(`post/${post.id}.html`, postPage);
     }),
   );
@@ -51,9 +57,9 @@ app.post("/post", async (req, res) => {
   content.posts.push(post);
   await putContent(content);
 
-  const mainPage = await renderToString(Main());
-  const postsPage = await renderToString(Main());
-  const postPage = await renderToString(Main());
+  const mainPage = await renderToString(MainPage(content));
+  const postsPage = await renderToString(PostsPage(content.posts));
+  const postPage = await renderToString(PostPage(post));
 
   await putObject("index.html", mainPage);
   await putObject(`posts.html`, postsPage);
@@ -81,8 +87,8 @@ app.delete("/post/:id", async (req, res) => {
   await putContent(content);
   await deleteObject(`post/${postId}.html`);
 
-  const mainPage = await renderToString(Main());
-  const postsPage = await renderToString(Main());
+  const mainPage = await renderToString(MainPage(content));
+  const postsPage = await renderToString(PostsPage(content.posts));
 
   await putObject("index.html", mainPage);
   await putObject(`posts.html`, postsPage);
@@ -112,9 +118,9 @@ app.post("/post/:id", async (req, res) => {
 
   await putContent(content);
 
-  const mainPage = await renderToString(Main());
-  const postsPage = await renderToString(Main());
-  const postPage = await renderToString(Main());
+  const mainPage = await renderToString(MainPage(content));
+  const postsPage = await renderToString(PostsPage(content.posts));
+  const postPage = await renderToString(PostPage(post));
 
   await putObject("index.html", mainPage);
   await putObject(`posts.html`, postsPage);
@@ -138,7 +144,7 @@ app.post("/thought", async (req, res) => {
   content.thoughts.push(thought);
   await putContent(content);
 
-  const thoughtsPage = await renderToString(Main());
+  const thoughtsPage = await renderToString(ThoughtsPage(content.thoughts));
   await putObject("thoughts.html", thoughtsPage);
 
   return res.send("success").sendStatus(200);
@@ -162,7 +168,7 @@ app.delete("/thought/:id", async (req, res) => {
   content.thoughts.splice(thoughtIdx, 1);
   await putContent(content);
 
-  const thoughtsPage = await renderToString(Main());
+  const thoughtsPage = await renderToString(ThoughtsPage(content.thoughts));
   await putObject("thoughts.html", thoughtsPage);
 
   return res.send("success").sendStatus(200);
@@ -170,6 +176,11 @@ app.delete("/thought/:id", async (req, res) => {
 
 app.get("/", (_, res) => {
   res.send("Welcome! you have reached decompressed poems api.");
+});
+
+app.get("/test", async (_, res) => {
+  const html = await renderToString(Test());
+  res.send(html).setHeader("Content-Type", "text/html; utf-8").sendStatus(200);
 });
 
 app.listen(3000, () => {

@@ -1,30 +1,102 @@
 /** @jsx h */
 /** @jsxFrag Fragment */
 import { h } from "jsx";
+import { Content, Post, Thought } from "./s3.ts";
 
 type LayoutProps = { children?: JSX.Element };
 
-export function Layout({ children }: LayoutProps) {
+function Header() {
+  return (
+    <header>
+      <h1>Decompressed Poems</h1>
+      <nav>
+        <a href="/posts.html">posts</a>
+        <a href="/thoughts.html">thoughts</a>
+      </nav>
+    </header>
+  );
+}
+
+function Layout({ children }: LayoutProps) {
   return (
     <html>
       <head>
         <title>Decompressed Poems</title>
       </head>
       <body>
-        {...children}
+        <Header />
+        <main>
+          {...children}
+        </main>
       </body>
     </html>
   );
 }
 
-export function Test() {
-  return <h1>hi</h1>;
+type PostListProps = {
+  posts: Post[];
+};
+
+function PostList({ posts }: PostListProps) {
+  return (
+    <div class="post-list">
+      {posts.map((post) => (
+        <a href={`/post/${post.id}.html`} class="post-link">
+          <p class="post-title">{post.title}</p>
+          <p class="post-description">{post.description}</p>
+          <p class="post-date">{post.createdAt}</p>
+        </a>
+      ))}
+    </div>
+  );
 }
 
-export function Main() {
+export function Test() {
   return (
     <Layout>
-      <Test />
+      <h1>hi</h1>
+    </Layout>
+  );
+}
+
+export function MainPage(content: Content) {
+  return (
+    <Layout>
+      <PostList posts={content.posts} />
+    </Layout>
+  );
+}
+
+export function PostsPage(posts: Post[]) {
+  return (
+    <Layout>
+      <PostList posts={posts} />
+    </Layout>
+  );
+}
+
+export function PostPage(post: Post) {
+  return (
+    <Layout>
+      <h2>{post.title}</h2>
+      <h4>{post.description}</h4>
+      <article>
+        {post.content}
+      </article>
+    </Layout>
+  );
+}
+
+export function ThoughtsPage(thoughts: Thought[]) {
+  console.log(thoughts);
+  return (
+    <Layout>
+      {thoughts.map((thought) => (
+        <div class="thought">
+          <p class="thought-content">{thought.content}</p>
+          <p class="thought-date">{thought.createdAt}</p>
+        </div>
+      ))}
     </Layout>
   );
 }

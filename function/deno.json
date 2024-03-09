@@ -1,0 +1,10 @@
+{
+  "imports": {
+    "jsx": "https://deno.land/x/jsx@v0.1.5/mod.ts",
+    "s3": "https://deno.land/x/s3_lite_client@0.7.0/mod.ts"
+  },
+  "tasks": {
+    "dev": "deno run --allow-net --allow-env --allow-read --watch server.ts"
+  },
+  "lock": false
+}

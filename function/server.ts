@@ -1,7 +1,6 @@
 import { renderToString } from "jsx";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono-helper";
-import { serveStatic } from "hono-middleware";
 import { MainPage, PoemsPage, PostPage, PostsPage, Test } from "./views.tsx";
 import {
   deleteObject,
@@ -21,6 +20,15 @@ const app = new Hono();
 type AuthBody = {
   password: string;
 };
+
+app.get("/test", async (c) => {
+  const html = await renderToString(Test());
+  return c.html(html);
+});
+
+app.get("/", (c) => {
+  return c.text("Welcome! you have reached decompressed poems api.");
+});
 
 app.post("/auth", async (c) => {
   const { password } = await c.req.json() as AuthBody;
@@ -207,16 +215,5 @@ app.get("/content", async (c) => {
 
   return c.json(content);
 });
-
-app.get("/", (c) => {
-  return c.text("Welcome! you have reached decompressed poems api.");
-});
-
-app.get("/test", async (c) => {
-  const html = await renderToString(Test());
-  return c.html(html);
-});
-
-app.use("/*", serveStatic({ root: "./public" }));
 
 Deno.serve({ port: 3000 }, app.fetch);

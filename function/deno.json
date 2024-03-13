@@ -4,7 +4,8 @@
     "s3": "https://deno.land/x/s3_lite_client@0.7.0/mod.ts",
     "hono": "https://deno.land/x/hono@v4.0.10/mod.ts",
     "hono-helper": "https://deno.land/x/hono@v4.0.10/helper.ts",
-    "hono-middleware": "https://deno.land/x/hono@v4.0.10/middleware.ts"
+    "cuid2": "npm:@paralleldrive/cuid2",
+    "marky": "https://deno.land/x/marky@v1.1.7/mod.ts"
   },
   "tasks": {
     "dev": "deno run --allow-net --allow-env --allow-read --watch server.ts"

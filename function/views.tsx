@@ -2,6 +2,7 @@
 /** @jsxFrag Fragment */
 import { h } from "jsx";
 import { Content, Poem, Post } from "./s3.ts";
+import { render } from "./utils.ts";
 
 type LayoutProps = { children?: JSX.Element };
 
@@ -22,6 +23,7 @@ function Layout({ children }: LayoutProps) {
     <html>
       <head>
         <title>Decompressed Poems</title>
+        <link href="/style.css" rel="stylesheet" />
       </head>
       <body>
         <Header />
@@ -81,7 +83,7 @@ export function PostPage(post: Post) {
       <h2>{post.title}</h2>
       <h4>{post.description}</h4>
       <article>
-        {post.content}
+        {render(post.content)}
       </article>
     </Layout>
   );

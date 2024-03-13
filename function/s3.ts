@@ -1,4 +1,5 @@
 import { S3Client } from "s3";
+import { S3_ACCESS_KEY, S3_SECRET_KEY } from "./env.ts";
 
 export type Post = {
   id: string;
@@ -25,10 +26,6 @@ export type Content = {
   posts: Post[];
   poems: Poem[];
 };
-
-const S3_ACCESS_KEY = Deno.env.get("S3_ACCESS_KEY");
-const S3_SECRET_KEY = Deno.env.get("S3_SECRET_KEY");
-console.log({ S3_ACCESS_KEY, S3_SECRET_KEY });
 
 export const s3Client = new S3Client({
   endPoint: "s3.ap-northeast-2.amazonaws.com",

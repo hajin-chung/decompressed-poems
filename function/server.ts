@@ -21,6 +21,11 @@ type AuthBody = {
   password: string;
 };
 
+app.onError((err, c) => {
+  console.error(err);
+  return c.json({ error: true, message: err.message, name: err.name }, 500);
+});
+
 app.get("/test", async (c) => {
   const html = await renderToString(Test());
   return c.html(html);

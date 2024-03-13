@@ -70,7 +70,6 @@ export async function getContent() {
   try {
     const contentObject = await s3Client.getObject("content.json");
     const content = await contentObject.json() as Content;
-    console.log(content);
     return content;
   } catch (e) {
     console.error(e);

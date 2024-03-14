@@ -2,14 +2,14 @@
 /** @jsxFrag Fragment */
 import { h } from "jsx";
 import { Content, Poem, Post } from "./s3.ts";
-import { render } from "./utils.ts";
+import { CSS, render } from "gfm";
 
 type LayoutProps = { children?: JSX.Element };
 
 function Header() {
   return (
     <header>
-      <h1>Decompressed Poems</h1>
+      <a id="title" href="/">Decompressed Poems</a>
       <nav>
         <a href="/posts.html">posts</a>
         <a href="/poems.html">poems</a>
@@ -24,6 +24,7 @@ function Layout({ children }: LayoutProps) {
       <head>
         <title>Decompressed Poems</title>
         <link href="/style.css" rel="stylesheet" />
+        <link href="/md.css" rel="stylesheet" />
       </head>
       <body>
         <Header />
@@ -53,10 +54,21 @@ function PostList({ posts }: PostListProps) {
   );
 }
 
-export function Test() {
+export function Test(content: string) {
+  const body = render(content);
   return (
     <Layout>
-      <h1>hi</h1>
+      <link href="/public/style.css" rel="stylesheet" />
+      <link href="/public/md.css" rel="stylesheet" />
+      <h2>this is sample title</h2>
+      <h4>description of this thingy</h4>
+      <article
+        data-color-mode="dark"
+        data-light-theme="dark"
+        data-dark-theme="dark"
+        class="markdown-body"
+        dangerouslySetInnerHTML={{ __html: body }}
+      />
     </Layout>
   );
 }

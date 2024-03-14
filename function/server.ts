@@ -1,6 +1,7 @@
 import { renderToString } from "jsx";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono-helper";
+import { serveStatic } from "hono-middleware";
 import { MainPage, PoemsPage, PostPage, PostsPage, Test } from "./views.tsx";
 import {
   deleteObject,
@@ -26,8 +27,13 @@ app.onError((err, c) => {
   return c.json({ error: true, message: err.message, name: err.name }, 500);
 });
 
+app.use("/public/style.css", serveStatic({ path: "./public/style.css" }));
+app.use("/public/md.css", serveStatic({ path: "./public/md.css" }));
+
 app.get("/test", async (c) => {
-  const html = await renderToString(Test());
+  const byteContent = await Deno.readFile("./public/test.md");
+  const content = new TextDecoder().decode(byteContent);
+  const html = await renderToString(Test(content));
   return c.html(html);
 });
 

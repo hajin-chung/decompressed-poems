@@ -10,7 +10,7 @@ function Header() {
   return (
     <header>
       <a id="title" href="/">Decompressed Poems</a>
-      <nav>
+      <nav hx-boost="true">
         <a href="/posts.html">posts</a>
         <a href="/poems.html">poems</a>
       </nav>
@@ -25,6 +25,12 @@ function Layout({ children }: LayoutProps) {
         <title>Decompressed Poems</title>
         <link href="/style.css" rel="stylesheet" />
         <link href="/md.css" rel="stylesheet" />
+        <script
+          src="https://unpkg.com/htmx.org@1.9.10"
+          integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
+          crossorigin="anonymous"
+        >
+        </script>
       </head>
       <body>
         <Header />

@@ -2,15 +2,15 @@
 /** @jsxFrag Fragment */
 import { h } from "jsx";
 import { Content, Poem, Post } from "./s3.ts";
-import { CSS, render } from "gfm";
+import { render } from "gfm";
 
 type LayoutProps = { children?: JSX.Element };
 
 function Header() {
   return (
-    <header>
+    <header hx-boost="true">
       <a id="title" href="/">Decompressed Poems</a>
-      <nav hx-boost="true">
+      <nav>
         <a href="/posts.html">posts</a>
         <a href="/poems.html">poems</a>
       </nav>

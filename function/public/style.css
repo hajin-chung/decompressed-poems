@@ -1,4 +1,6 @@
-html, body {
+html,
+body,
+p {
   margin: 0;
 }
 
@@ -36,3 +38,21 @@ img {
   object-fit: contain;
 }
 
+.poems {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.poem {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: end;
+}
+
+.poem-date {
+  font-size: 12px;
+  color: #aaa;
+}

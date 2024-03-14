@@ -3,6 +3,7 @@
 import { h } from "jsx";
 import { Content, Poem, Post } from "./s3.ts";
 import { render } from "gfm";
+import { formatDate } from "./utils.ts";
 
 type LayoutProps = { children?: JSX.Element };
 
@@ -110,12 +111,14 @@ export function PostPage(post: Post) {
 export function PoemsPage(poems: Poem[]) {
   return (
     <Layout>
-      {poems.map((poem) => (
-        <div class="poem">
-          <p class="poem-content">{poem.content}</p>
-          <p class="poem-date">{poem.createdAt}</p>
-        </div>
-      ))}
+      <div class="poems">
+        {poems.map((poem) => (
+          <div class="poem">
+            <p class="poem-content">{poem.content}</p>
+            <p class="poem-date">{formatDate(poem.createdAt)}</p>
+          </div>
+        ))}
+      </div>
     </Layout>
   );
 }

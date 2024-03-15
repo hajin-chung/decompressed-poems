@@ -2,7 +2,13 @@ import { renderToString } from "jsx";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono-helper";
 import { serveStatic } from "hono-middleware";
-import { MainPage, PoemsPage, PostPage, PostsPage, Test } from "./views.tsx";
+import {
+  AdminPostPage,
+  MainPage,
+  PoemsPage,
+  PostPage,
+  PostsPage,
+} from "./views.tsx";
 import {
   deleteObject,
   getContent,
@@ -15,6 +21,7 @@ import {
 } from "./s3.ts";
 import { createId, current } from "./utils.ts";
 import { PASSWORD } from "./env.ts";
+import { AdminPoemPage } from "./views.tsx";
 
 const app = new Hono();
 
@@ -31,9 +38,8 @@ app.use("/public/style.css", serveStatic({ path: "./public/style.css" }));
 app.use("/public/md.css", serveStatic({ path: "./public/md.css" }));
 
 app.get("/test", async (c) => {
-  const byteContent = await Deno.readFile("./public/test.md");
-  const content = new TextDecoder().decode(byteContent);
-  const html = await renderToString(Test(content));
+  const content = await getContent();
+  const html = await renderToString(AdminPostPage(content!.posts));
   return c.html(html);
 });
 
@@ -67,10 +73,14 @@ app.post("/build", async (c) => {
   const mainPage = await renderToString(MainPage(content));
   const postsPage = await renderToString(PostsPage(content.posts));
   const poemsPage = await renderToString(PoemsPage(content.poems));
+  const adminPostPage = await renderToString(AdminPostPage(content.posts));
+  const adminPoemPage = await renderToString(AdminPoemPage(content.poems));
 
   await putObject("index.html", mainPage);
   await putObject("posts.html", postsPage);
   await putObject("poems.html", poemsPage);
+  await putObject("admin/posts.html", adminPostPage);
+  await putObject("admin/poems.html", adminPoemPage);
 
   await Promise.all(
     content.posts.map(async (post) => {

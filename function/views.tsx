@@ -5,8 +5,6 @@ import { Content, Poem, Post } from "./s3.ts";
 import { render } from "gfm";
 import { formatDate } from "./utils.ts";
 
-type LayoutProps = { children?: JSX.Element };
-
 function Header() {
   return (
     <header hx-boost="true">
@@ -19,7 +17,9 @@ function Header() {
   );
 }
 
-function Layout({ children }: LayoutProps) {
+type LayoutProps = { children?: JSX.Element; isAdmin?: boolean };
+
+function Layout({ children, isAdmin }: LayoutProps) {
   return (
     <html>
       <head>
@@ -33,8 +33,8 @@ function Layout({ children }: LayoutProps) {
         >
         </script>
       </head>
-      <body>
-        <Header />
+      <body class={isAdmin ? "admin" : ""}>
+        {!isAdmin && <Header />}
         <main>
           {...children}
         </main>
@@ -118,6 +118,71 @@ export function PoemsPage(poems: Poem[]) {
             <p class="poem-date">{formatDate(poem.createdAt)}</p>
           </div>
         ))}
+      </div>
+    </Layout>
+  );
+}
+
+export function AdminPage() {
+  return (
+    <Layout isAdmin={true}>
+      <a id="title" href="/">Decompressed Poems</a>
+      <nav>
+        <a href="/admin/posts.html">posts</a>
+        <a href="/admin/poems.html">poems</a>
+      </nav>
+    </Layout>
+  );
+}
+
+export function AdminPostPage(posts: Post[]) {
+  return (
+    <Layout isAdmin={true}>
+      <a id="title" href="/">Decompressed Poems</a>
+      <nav>
+        <a href="/admin/posts.html">posts</a>
+        <a href="/admin/poems.html">poems</a>
+      </nav>
+      <div id="dashboard-post">
+        <div class="list">
+          <button class="new">new</button>
+          {posts.map((post) => (
+            <div class="controls">
+              <button class="edit">{post.title}</button>
+              <button class="delete">delete</button>
+            </div>
+          ))}
+        </div>
+        <div class="content">
+          <textarea class="input" />
+          <button class="save">save</button>
+        </div>
+      </div>
+    </Layout>
+  );
+}
+
+export function AdminPoemPage(poems: Poem[]) {
+  return (
+    <Layout isAdmin={true}>
+      <a id="title" href="/">Decompressed Poems</a>
+      <nav>
+        <a href="/admin/posts.html">posts</a>
+        <a href="/admin/poems.html">poems</a>
+      </nav>
+      <div id="dashboard-poem">
+        <div class="new">
+          <textarea class="input" />
+          <button class="save">save</button>
+        </div>
+        <div class="list">
+          {poems.map((poem) => (
+            <div class="controls">
+              <div class="content">{poem.content}</div>
+              <button class="delete">delete</button>
+            </div>
+          ))}
+        </div>
       </div>
     </Layout>
   );

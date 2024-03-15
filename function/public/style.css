@@ -122,10 +122,14 @@ button .link {
 }
 
 #dashboard-post .title-input {
+  background: inherit;
+  color: inherit;
   width: 100%
 }
 
 #dashboard-post .description-input {
+  background: inherit;
+  color: inherit;
   width: 100%;
 }
 

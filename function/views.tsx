@@ -131,6 +131,9 @@ export function AdminPage() {
         <a href="/admin/posts.html">posts</a>
         <a href="/admin/poems.html">poems</a>
       </nav>
+      <input class="auth" />
+      <button class="submit">submit</button>
+      <script src="/auth.js"></script>
     </Layout>
   );
 }
@@ -181,11 +184,12 @@ export function AdminPoemPage(poems: Poem[]) {
           {poems.map((poem) => (
             <div class="controls">
               <div class="content">{poem.content}</div>
-              <button class="delete">delete</button>
+              <button class="delete" id={poem.id}>delete</button>
             </div>
           ))}
         </div>
       </div>
+      <script src="/poem.js"></script>
     </Layout>
   );
 }

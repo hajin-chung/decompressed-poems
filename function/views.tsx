@@ -148,7 +148,7 @@ export function AdminPostPage(posts: Post[]) {
           <button class="new">new</button>
           {posts.map((post) => (
             <div class="controls">
-              <button class="edit">{post.title}</button>
+              <button class="edit link">{post.title}</button>
               <button class="delete">delete</button>
             </div>
           ))}

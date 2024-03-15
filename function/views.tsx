@@ -154,7 +154,9 @@ export function AdminPostPage(posts: Post[]) {
           ))}
         </div>
         <div class="content">
-          <textarea class="input" />
+          <input class="title-input" placeholder="title" />
+          <input class="description-input" placeholder="description" />
+          <textarea class="content-input" />
           <button class="save">save</button>
         </div>
       </div>
